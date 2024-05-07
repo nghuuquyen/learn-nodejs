@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh sách sản phẩm</title>
+</head>
+
+<body>
+    <h1>Danh sách sản phẩm</h1>
+    <ul id="productList"></ul>
+
+    <hr>
+    <h1>Tìm kiếm sản phẩm</h1>
+    <input type="text" id="searchInput" placeholder="Nhập từ khóa tìm kiếm">
+    <button onclick="searchProducts()">Tìm kiếm</button>
+    <div id="searchResults"></div>
+
+    <script>
+        // Sử dụng AJAX để gọi API và render danh sách sản phẩm bằng DOM
+        fetch('/api/products')
+            .then(response => response.json())
+            .then(products => {
+                const productList = document.getElementById('productList');
+                products.forEach(product => {
+                    const li = document.createElement('li');
+                    li.textContent = `${product.name} - $${product.price}`;
+                    productList.appendChild(li);
+                });
+            })
+            .catch(error => console.error('Lỗi:', error));
+
+        function searchProducts() {
+            // Lấy giá trị từ ô input và chuyển thành chữ thường
+            const searchInput = document.getElementById('searchInput').value.toLowerCase();
+
+            // Gọi API để tìm kiếm sản phẩm với từ khóa tìm kiếm
+            fetch(`/api/search?keyword=${searchInput}`)
+                .then(response => response.json())
+                .then(searchResults => {
+                    // Lấy div để hiển thị kết quả tìm kiếm
+                    const searchResultsDiv = document.getElementById('searchResults');
+                    // Xóa bỏ nội dung hiện tại của div
+                    searchResultsDiv.innerHTML = '';
+
+                    // Kiểm tra xem có kết quả tìm kiếm không
+                    if (searchResults.length > 0) {
+                        // Nếu có, tạo danh sách ul để hiển thị kết quả
+                        const ul = document.createElement('ul');
+                        // Duyệt qua mảng kết quả tìm kiếm và thêm từng sản phẩm vào danh sách ul
+                        searchResults.forEach(result => {
+                            const li = document.createElement('li');
+                            li.textContent = `${result.name} - $${result.price}`;
+                            ul.appendChild(li);
+                        });
+                        // Thêm danh sách ul vào div kết quả tìm kiếm
+                        searchResultsDiv.appendChild(ul);
+                    } else {
+                        // Nếu không có kết quả, hiển thị thông báo
+                        searchResultsDiv.textContent = 'Không tìm thấy kết quả phù hợp';
+                    }
+                })
+                .catch(error => console.error('Lỗi:', error));
+        }
+    </script>
+</body>
+
+</html>

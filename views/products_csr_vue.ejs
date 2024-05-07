@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh sách sản phẩm</title>
+    <!-- Thêm đường dẫn đến thư viện Vue.js -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <!-- Hiển thị danh sách sản phẩm -->
+        <h1>Danh sách sản phẩm</h1>
+        <ul>
+            <li v-for="product in products" :key="product.id">
+                {{ product.name }} - ${{ product.price }}
+            </li>
+        </ul>
+
+        <hr>
+
+        <!-- Tìm kiếm sản phẩm -->
+        <h1>Tìm kiếm sản phẩm</h1>
+        <input type="text" v-model="searchInput" placeholder="Nhập từ khóa tìm kiếm">
+
+        <button @click="searchProducts">Tìm kiếm</button>
+        <div>
+            <!-- Hiển thị kết quả tìm kiếm -->
+            <ul v-if="searchResults.length > 0">
+                <li v-for="result in searchResults" :key="result.id">
+                    {{ result.name }} - ${{ result.price }}
+                </li>
+            </ul>
+            <p v-else>Không tìm thấy kết quả phù hợp</p>
+        </div>
+    </div>
+
+    <script>
+        const app = Vue.createApp({
+            data() {
+                return {
+                    products: [], // Danh sách sản phẩm
+                    searchInput: '', // Từ khóa tìm kiếm
+                    searchResults: [] // Kết quả tìm kiếm
+                };
+            },
+            mounted() {
+                // Gọi API để lấy danh sách sản phẩm khi component được tạo
+                fetch('/api/products')
+                    .then(response => response.json())
+                    .then(data => {
+                        this.products = data;
+                    })
+                    .catch(error => console.error('Lỗi:', error));
+            },
+            methods: {
+                // Phương thức tìm kiếm sản phẩm
+                searchProducts() {
+                    // Gọi API để tìm kiếm sản phẩm với từ khóa tìm kiếm
+                    fetch(`/api/search?keyword=${this.searchInput}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            this.searchResults = data;
+                        })
+                        .catch(error => console.error('Lỗi:', error));
+                }
+            }
+        });
+
+        app.mount('#app');
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh sách sản phẩm</title>
+</head>
+
+<body>
+    <h1>Danh sách sản phẩm</h1>
+    <ul id="productList"></ul>
+
+    <script>
+        // Sử dụng AJAX để gọi API và render danh sách sản phẩm bằng DOM
+        fetch('/api/products')
+            .then(response => response.json())
+            .then(products => {
+                const productList = document.getElementById('productList');
+                products.forEach(product => {
+                    const li = document.createElement('li');
+                    li.textContent = `${product.name} - $${product.price}`;
+                    productList.appendChild(li);
+                });
+            })
+            .catch(error => console.error('Lỗi:', error));
+    </script>
+</body>
+
+</html>
